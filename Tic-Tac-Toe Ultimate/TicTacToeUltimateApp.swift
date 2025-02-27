@@ -1,5 +1,6 @@
 import SwiftUI
 
+@main
 struct TicTacToeUltimateApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
