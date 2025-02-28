@@ -55,11 +55,11 @@ struct VictoryView: View {
                 
                 // Анимированный фон с конфетти
                 ConfettiView()
-                    .frame(height: 200)
+                    .frame(height: 10)
                 
                 Spacer()
                 
-                VStack(spacing: 15) {
+                VStack(spacing: 5) {
                     Button(action: onPlayAgain) {
                         HStack {
                             Image(systemName: "arrow.clockwise")
