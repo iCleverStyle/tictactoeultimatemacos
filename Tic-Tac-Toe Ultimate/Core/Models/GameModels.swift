@@ -10,6 +10,19 @@ enum PlayerMark: String, CaseIterable {
     }
 }
 
+// Уровень сложности бота
+enum BotDifficulty {
+    case easy    // Случайные ходы
+    case hard    // Алгоритм minimax
+    
+    var description: String {
+        switch self {
+        case .easy: return "Лёгкий"
+        case .hard: return "Сложный"
+        }
+    }
+}
+
 // Режим игры
 enum GameMode {
     case singlePlayer // Против бота

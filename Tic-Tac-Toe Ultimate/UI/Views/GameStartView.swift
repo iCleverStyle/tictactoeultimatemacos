@@ -53,6 +53,34 @@ struct GameStartView: View {
                             }
                         }
                         
+                        // Секция выбора сложности бота (только для одиночного режима)
+                        if gameViewModel.gameMode == .singlePlayer {
+                            VStack(spacing: 15) {
+                                Text("Уровень сложности")
+                                    .font(.title2)
+                                    .fontWeight(.medium)
+                                HStack {
+                                    SelectionButton(
+                                        title: "Лёгкий",
+                                        subtitle: "Случайные ходы",
+                                        isSelected: gameViewModel.botDifficulty == .easy,
+                                        action: {
+                                            gameViewModel.botDifficulty = .easy
+                                        }
+                                    )
+                                    
+                                    SelectionButton(
+                                        title: "Сложный",
+                                        subtitle: "Стратегические ходы",
+                                        isSelected: gameViewModel.botDifficulty == .hard,
+                                        action: {
+                                            gameViewModel.botDifficulty = .hard
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        
                         // Секция выбора первого хода
                         VStack(spacing: 15) {
                             Text("Выбор первого хода")
@@ -108,7 +136,8 @@ struct GameStartView: View {
                             gameViewModel.startNewGame(
                                 mode: gameViewModel.gameMode,
                                 firstMoveSelection: gameViewModel.firstMoveSelection,
-                                firstPlayer: gameViewModel.selectedFirstPlayer
+                                firstPlayer: gameViewModel.selectedFirstPlayer,
+                                difficulty: gameViewModel.botDifficulty
                             )
                             
                             // Показываем игровое поле

@@ -37,6 +37,20 @@ struct GameBoardView: View {
                     
                     Spacer()
                     
+                    // Отображаем уровень сложности бота, если режим игры с 1 игроком
+                    if viewModel.gameMode == .singlePlayer {
+                        VStack(alignment: .center) {
+                            Text("Сложность бота:")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            Text(viewModel.botDifficulty.description)
+                                .font(.headline)
+                                .foregroundColor(viewModel.botDifficulty == .easy ? .green : .red)
+                        }
+                        .padding(.trailing, 10)
+                    }
+                    
                     Button {
                         if let onExit = onExit {
                             onExit()
@@ -87,7 +101,8 @@ struct GameBoardView: View {
                         viewModel.startNewGame(
                             mode: viewModel.gameMode,
                             firstMoveSelection: viewModel.firstMoveSelection,
-                            firstPlayer: viewModel.selectedFirstPlayer
+                            firstPlayer: viewModel.selectedFirstPlayer,
+                            difficulty: viewModel.botDifficulty
                         )
                     },
                     onMainMenu: {
