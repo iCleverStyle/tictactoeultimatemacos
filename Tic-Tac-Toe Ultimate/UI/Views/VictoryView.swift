@@ -60,33 +60,37 @@ struct VictoryView: View {
                 Spacer()
                 
                 VStack(spacing: 5) {
-                    Button(action: onPlayAgain) {
-                        HStack {
-                            Image(systemName: "arrow.clockwise")
-                            Text("Играть снова")
-                        }
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(height: 50)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .cornerRadius(12)
+                    // Кнопка "Играть снова" без подсветки активности
+                    HStack {
+                        Image(systemName: "arrow.clockwise")
+                        Text("Играть снова")
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(height: 50)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .cornerRadius(12)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onPlayAgain()
+                    }
                     
-                    Button(action: onMainMenu) {
-                        HStack {
-                            Image(systemName: "house.fill")
-                            Text("Главное меню")
-                        }
-                        .font(.headline)
-                        .foregroundColor(.blue)
-                        .frame(height: 50)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue.opacity(0.15))
-                        .cornerRadius(12)
+                    // Кнопка "Главное меню" без подсветки активности
+                    HStack {
+                        Image(systemName: "house.fill")
+                        Text("Главное меню")
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .font(.headline)
+                    .foregroundColor(.blue)
+                    .frame(height: 50)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue.opacity(0.15))
+                    .cornerRadius(12)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onMainMenu()
+                    }
                 }
             }
             .padding()
