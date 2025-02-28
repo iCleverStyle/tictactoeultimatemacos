@@ -249,8 +249,8 @@ struct AdaptivePlayerSelection: View {
             HStack(spacing: 15) {
                 PlayerSelectionButton(
                     title: "Игрок 1",
-                    symbol: selectedFirstPlayer == .x ? "X" : "O",
-                    symbolColor: selectedFirstPlayer == .x ? .blue : .red,
+                    symbol: "X",
+                    symbolColor: .blue,
                     isSelected: selectedFirstPlayer == .x,
                     info: selectedFirstPlayer == .x ? "Ходит первым" : "Ходит вторым",
                     size: buttonSize,
@@ -262,8 +262,8 @@ struct AdaptivePlayerSelection: View {
                 
                 PlayerSelectionButton(
                     title: gameMode == .singlePlayer ? "Бот" : "Игрок 2",
-                    symbol: selectedFirstPlayer == .o ? "X" : "O",
-                    symbolColor: selectedFirstPlayer == .o ? .blue : .red,
+                    symbol: "O",
+                    symbolColor: .red,
                     isSelected: selectedFirstPlayer == .o,
                     info: selectedFirstPlayer == .o ? "Ходит первым" : "Ходит вторым",
                     size: buttonSize,
