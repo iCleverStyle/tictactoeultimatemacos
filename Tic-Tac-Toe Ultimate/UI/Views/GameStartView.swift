@@ -14,28 +14,28 @@ struct GameStartView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color(NSColor.windowBackgroundColor)
-                    .edgesIgnoringSafeArea(.all)
-                
-                if !showGameBoard {
-                    ScrollView {
-                        VStack(spacing: 25) {
-                            Text("Ultimate Tic-Tac-Toe")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                                .padding(.top, 30)
-                            
-                            // Секция выбора режима игры
-                            VStack(spacing: 15) {
-                                Text("Выберите режим игры")
-                                    .font(.title2)
-                                    .fontWeight(.medium)
-                                
+        ZStack {
+            Color(NSColor.windowBackgroundColor)
+                .edgesIgnoringSafeArea(.all)
+            
+            if !showGameBoard {
+                ScrollView {
+                    VStack(spacing: 25) {
+                        Text("Ultimate Tic-Tac-Toe")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .padding(.top, 20)
+                        
+                        // Секция выбора режима игры
+                        VStack(spacing: 20) {
+                            Text("Выберите режим игры")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                            HStack {
                                 Button {
                                     gameViewModel.gameMode = .singlePlayer
-                                    setupInitialPlayerSelection()
+                                    //setupInitialPlayerSelection()
+                                    //gameViewModel.selectedFirstPlayer = .x
                                 } label: {
                                     GameModeButton(title: "1 игрок", subtitle: "Играть против компьютера", isSelected: gameViewModel.gameMode == .singlePlayer)
                                 }
@@ -48,13 +48,15 @@ struct GameStartView: View {
                                     GameModeButton(title: "2 игрока", subtitle: "Играть с другом", isSelected: gameViewModel.gameMode == .twoPlayers)
                                 }
                             }
-                            
-                            // Секция выбора первого хода
-                            VStack(spacing: 15) {
-                                Text("Выбор первого хода")
-                                    .font(.title2)
-                                    .fontWeight(.medium)
-                                
+
+                        }
+                        
+                        // Секция выбора первого хода
+                        VStack(spacing: 15) {
+                            Text("Выбор первого хода")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                            HStack {
                                 Button {
                                     gameViewModel.firstMoveSelection = .direct
                                     if gameViewModel.gameMode == .singlePlayer {
@@ -77,65 +79,61 @@ struct GameStartView: View {
                                         isSelected: gameViewModel.firstMoveSelection == .random
                                     )
                                 }
-                                
-                                // Выбор первого игрока (если прямой выбор)
-                                if gameViewModel.firstMoveSelection == .direct {
-                                    VStack(spacing: 10) {
-                                        if gameViewModel.gameMode == .singlePlayer {
-                                            // Для одиночного режима показываем информационное сообщение
-                                            Text("Бот ходит первым (играет X):")
-                                                .font(.headline)
-                                                .padding(.top, 5)
-                                        } else {
-                                            // Для режима с двумя игроками оставляем выбор
-                                            Text("Кто ходит первым (всегда играет X):")
-                                                .font(.headline)
-                                                .padding(.top, 5)
-                                        }
-                                        
-                                        AdaptivePlayerSelection(
-                                            selectedFirstPlayer: $gameViewModel.selectedFirstPlayer,
-                                            gameMode: gameViewModel.gameMode,
-                                            isSelectionEnabled: gameViewModel.gameMode != .singlePlayer
-                                        )
-                                    }
-                                    .padding(.top, 5)
+                            }
+
+                            // Выбор первого игрока (если прямой выбор)
+                            if gameViewModel.firstMoveSelection == .direct {
+                                VStack(spacing: 10) {
+
+                                    Text("Кто ходит первым?")
+                                        .font(.headline)
+                                        .padding(.top, 5)
+
+                                    
+                                    AdaptivePlayerSelection(
+                                        selectedFirstPlayer: $gameViewModel.selectedFirstPlayer,
+                                        gameMode: gameViewModel.gameMode//,
+                                        //isSelectionEnabled: gameViewModel.gameMode != .singlePlayer
+                                    )
                                 }
+                                .padding(.top, 5)
                             }
-                            
-                            Spacer()
-                            
-                            // Кнопка старта игры
-                            Button {
-                                // Начинаем новую игру
-                                gameViewModel.startNewGame(
-                                    mode: gameViewModel.gameMode,
-                                    firstMoveSelection: gameViewModel.firstMoveSelection,
-                                    firstPlayer: gameViewModel.selectedFirstPlayer
-                                )
-                                
-                                // Показываем игровое поле
-                                showGameBoard = true
-                            } label: {
-                                Text("Начать игру")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(height: 44)
-                                    .frame(maxWidth: .infinity)
-                                    .background(Color.blue)
-                                    .cornerRadius(12)
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .padding(.top, 20)
                         }
-                        .padding()
+                        
+
+                        
+                        // Кнопка старта игры
+                        Button {
+                            // Начинаем новую игру
+                            gameViewModel.startNewGame(
+                                mode: gameViewModel.gameMode,
+                                firstMoveSelection: gameViewModel.firstMoveSelection,
+                                firstPlayer: gameViewModel.selectedFirstPlayer
+                            )
+                            
+                            // Показываем игровое поле
+                            showGameBoard = true
+                        } label: {
+                            Text("Начать игру")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(height: 44)
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .cornerRadius(12)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .padding(.top, 20)
                     }
-                } else {
-                    // Экран игры
-                    GameBoardView(viewModel: gameViewModel, onExit: {
-                        showGameBoard = false
-                    })
+                    .padding()
+                    .frame(maxWidth: 600) // Ограничиваем максимальную ширину для лучшего внешнего вида
+                    .frame(maxWidth: .infinity) // Центрируем содержимое
                 }
+            } else {
+                // Экран игры
+                GameBoardView(viewModel: gameViewModel, onExit: {
+                    showGameBoard = false
+                })
             }
         }
     }
@@ -161,10 +159,10 @@ struct GameModeButton: View {
             Spacer()
             
             if isSelected {
-                Image(systemName: "checkmark.circle.fill")
+                Image(systemName: "person.fill")
                     .foregroundColor(.blue)
             } else {
-                Image(systemName: "chevron.right")
+                Image(systemName: "person")
                     .foregroundColor(.secondary)
             }
         }
@@ -173,11 +171,12 @@ struct GameModeButton: View {
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color(NSColor.controlBackgroundColor))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
                 .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
         )
+//        .overlay(
+//            RoundedRectangle(cornerRadius: 12)
+//                .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+//        )
     }
 }
 
@@ -354,7 +353,7 @@ struct SpriteView: NSViewRepresentable {
 
 struct GameView: View {
     var body: some View {
-        SpriteView(scene: GameScene(size: CGSize(width: 800, height: 600)))
-            .frame(width: 800, height: 600)
+        SpriteView(scene: GameScene(size: CGSize(width: 1000, height: 1000)))
+            .frame(width: 1000, height: 1000)
     }
 } 
