@@ -26,17 +26,19 @@ class GameViewModel: ObservableObject {
         
         // Определяем, кто ходит первым
         if firstMoveSelection == .direct {
-            // Первый игрок всегда ходит крестиками (X)
-            gameBoard.currentPlayer = .x
+            // Устанавливаем выбранного игрока как первого
             self.selectedFirstPlayer = firstPlayer
         } else {
-            // Случайный выбор первого игрока, но первый всегда X
+            // Случайный выбор первого игрока
             self.selectedFirstPlayer = Bool.random() ? .x : .o
-            gameBoard.currentPlayer = .x
         }
         
-        // Если игра против компьютера и выбрано, что бот ходит первым
+        // Устанавливаем того, кто ходит первым
+        gameBoard.currentPlayer = selectedFirstPlayer
+        
+        // Если игра против компьютера и бот должен ходить первым (бот всегда O)
         if mode == .singlePlayer && selectedFirstPlayer == .o {
+            // Даем боту сделать ход с небольшой задержкой
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.makeBotMove()
             }
@@ -47,6 +49,11 @@ class GameViewModel: ObservableObject {
     func makeMove(boardPosition: Position, cellPosition: Position) {
         // Проверяем, можно ли сделать ход в данную мини-доску
         guard canMakeMove(boardPosition: boardPosition) else { return }
+        
+        // Проверяем, что это не ход бота (игрок не может сделать ход за бота)
+        if gameMode == .singlePlayer && gameBoard.currentPlayer == .o {
+            return
+        }
         
         // Получаем доступ к конкретной мини-доске
         let _ = boardPosition.row * 3 + boardPosition.col
@@ -226,6 +233,7 @@ class GameViewModel: ObservableObject {
     
     // Логика для хода компьютера
     private func makeBotMove() {
+        // Бот всегда играет за O
         guard gameBoard.gameState == .inProgress && gameBoard.currentPlayer == .o else { return }
         
         // Простая стратегия: выбираем случайную доступную ячейку
@@ -262,10 +270,54 @@ class GameViewModel: ObservableObject {
             }
         }
         
-        // Если есть доступные ходы, выбираем случайный
+        // Если есть доступные ходы, выбираем случайный и делаем ход непосредственно в доске
         if !availableMoves.isEmpty {
             let randomMove = availableMoves.randomElement()!
-            makeMove(boardPosition: randomMove.boardPos, cellPosition: randomMove.cellPos)
+            let boardPosition = randomMove.boardPos
+            let cellPosition = randomMove.cellPos
+            
+            // Непосредственно делаем ход бота (минуя проверку в методе makeMove)
+            if canMakeMove(boardPosition: boardPosition) {
+                // Получаем доступ к конкретной мини-доске
+                let board = gameBoard.boards[boardPosition.row][boardPosition.col]
+                
+                // Проверяем, можно ли сделать ход в данную ячейку
+                let cell = board.cells[cellPosition.row][cellPosition.col]
+                if cell.state.isEmpty && board.state == .inProgress {
+                    // Делаем ход
+                    gameBoard.boards[boardPosition.row][boardPosition.col].cells[cellPosition.row][cellPosition.col].state = .marked(currentPlayer)
+                    
+                    // Проверяем, выиграна ли мини-доска
+                    checkMiniBoardState(at: boardPosition)
+                    
+                    // Проверяем, выиграна ли вся игра
+                    checkGameState()
+                    
+                    // Если игра продолжается, переключаем игрока и определяем следующую активную мини-доску
+                    if gameBoard.gameState == .inProgress {
+                        // Определяем следующую активную мини-доску
+                        let nextBoardPosition = Position(row: cellPosition.row, col: cellPosition.col)
+                        
+                        // Если указанная доска уже выиграна или ничья, то следующий ход может быть в любую доску
+                        if gameBoard.boards[nextBoardPosition.row][nextBoardPosition.col].state != .inProgress {
+                            gameBoard.currentBoardPosition = nil
+                        } else {
+                            gameBoard.currentBoardPosition = nextBoardPosition
+                        }
+                        
+                        // Переключаем игрока
+                        gameBoard.currentPlayer = gameBoard.currentPlayer.opposite
+                    } else if case .won(let mark) = gameBoard.gameState {
+                        // Если есть победитель, показываем экран победы
+                        self.winningPlayer = mark
+                        self.showVictoryScreen = true
+                    } else if case .draw = gameBoard.gameState {
+                        // Если ничья
+                        self.isGameDraw = true
+                        self.showVictoryScreen = true
+                    }
+                }
+            }
         }
     }
 } 
